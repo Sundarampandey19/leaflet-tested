@@ -1,11 +1,5 @@
 const socket = io()
 
-
-// socket.on('connect', () => {
-//     console.log('Connected to server');
-// });
-
-
 if(navigator.geolocation){
     navigator.geolocation.watchPosition(
         (position)=>{
@@ -36,7 +30,6 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 const markers = {}
 
 
-
 socket.on('receive-location' , (data)=>{
     const {id , latitude , longitude} = data
     map.setView([latitude, longitude] , 16)
@@ -45,4 +38,13 @@ socket.on('receive-location' , (data)=>{
     }else{
         markers[id] = L.marker([latitude, longitude]).addTo(map)
     }
+})
+
+
+socket.on('user-disconnected' , (id)=>{
+    if(markers[id]){
+        map.removeLayer(markers[id])
+        delete markers[id]
+    }
+
 })
